@@ -18,14 +18,18 @@ defmodule Exactly.DurationTest do
   end
 
   describe "inspect/1" do
-    assert Duration.new(1 / 4) |> inspect() == "#Exactly.Duration<4>"
+    test "returns an IEx-ready represenation of the duration" do
+      assert Duration.new(1 / 4) |> inspect() == "#Exactly.Duration<4>"
+    end
   end
 
   describe "to_lilypond/1" do
-    assert Duration.new(1 / 4) |> Exactly.to_lilypond() == "4"
-    assert Duration.new(7 / 64) |> Exactly.to_lilypond() == "16.."
-    assert Duration.new(2) |> Exactly.to_lilypond() == "\\breve"
-    assert Duration.new(6) |> Exactly.to_lilypond() == "\\longa."
-    assert Duration.new(15.75) |> Exactly.to_lilypond() == "\\maxima....."
+    test "returns the correct Lilypond string for the duration" do
+      assert Duration.new(1 / 4) |> Exactly.to_lilypond() == "4"
+      assert Duration.new(7 / 64) |> Exactly.to_lilypond() == "16.."
+      assert Duration.new(2) |> Exactly.to_lilypond() == "\\breve"
+      assert Duration.new(6) |> Exactly.to_lilypond() == "\\longa."
+      assert Duration.new(15.75) |> Exactly.to_lilypond() == "\\maxima....."
+    end
   end
 end
