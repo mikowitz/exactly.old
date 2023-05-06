@@ -1,4 +1,6 @@
 defmodule Exactly.Utils do
+  @moduledoc false
+
   import Bitwise
 
   @float_bias 1022
