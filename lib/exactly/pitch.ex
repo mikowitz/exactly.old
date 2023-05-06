@@ -1,4 +1,13 @@
 defmodule Exactly.Pitch do
+  @moduledoc """
+  Models a quartertone pitch.
+
+  The `Pitch` struct holds three fields, an index for the diatonic pitch class
+  (C = 0), a float indicating the accidental (0 = natural, 0.25 = quarter sharp,
+  0.5 = sharp, 1.0 = double sharp), and the octave (0 = middle C octave). This
+  matches how Lilypond models pitch data.
+  """
+
   defstruct [:note, :alter, :octave]
 
   @type t :: %__MODULE__{

@@ -4,7 +4,7 @@ defmodule Exactly.PitchTest do
   alias Exactly.Pitch
 
   describe "new" do
-    test "new/0 defaults to c4" do
+    test "new/0 defaults to middle C" do
       assert Pitch.new() == %Pitch{note: 0, alter: 0, octave: 0}
     end
 
