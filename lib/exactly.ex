@@ -4,5 +4,13 @@ defmodule Exactly do
   using Elixir as the building blocks.
   """
 
+  @type score_element ::
+          Exactly.Chord.t()
+          | Exactly.Note.t()
+          | Exactly.Rest.t()
+          | Exactly.Skip.t()
+          | Exactly.Tuplet.t()
+          | Exactly.Voice.t()
+
   def to_lilypond(x), do: Exactly.ToLilypond.to_lilypond(x)
 end
