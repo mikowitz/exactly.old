@@ -5,6 +5,12 @@ defmodule Exactly.Voice do
 
   defstruct [:elements, :name, :simultaneous]
 
+  @type t :: %__MODULE__{
+          elements: [Exactly.score_element()],
+          name: String.t() | nil,
+          simultaneous: boolean()
+        }
+
   def new(elements \\ [], name \\ nil, opts \\ []) do
     %__MODULE__{
       elements: elements,
@@ -15,6 +21,7 @@ defmodule Exactly.Voice do
 
   defimpl Inspect do
     import Inspect.Algebra
+    import Exactly.Inspect
 
     def inspect(%Exactly.Voice{elements: elements, name: name, simultaneous: simultaneous}, _opts) do
       {open, close} = brackets(name, simultaneous)
@@ -27,18 +34,13 @@ defmodule Exactly.Voice do
         ">"
       ])
     end
-
-    defp brackets(nil, false), do: {"{", "}"}
-    defp brackets(nil, true), do: {"<<", ">>"}
-    defp brackets(name, false), do: {"#{name} {", "}"}
-    defp brackets(name, true), do: {"#{name} <<", ">>"}
   end
 
   defimpl Exactly.ToLilypond do
     import Exactly.Lilypond.Utils
 
     def to_lilypond(%Exactly.Voice{elements: elements, name: name, simultaneous: simultaneous}) do
-      {open, close} = brackets(name, simultaneous)
+      {open, close} = brackets("Voice", name, simultaneous)
 
       [
         open,
@@ -50,10 +52,5 @@ defmodule Exactly.Voice do
       |> List.flatten()
       |> Enum.join("\n")
     end
-
-    defp brackets(nil, false), do: {"\\context Voice {", "}"}
-    defp brackets(nil, true), do: {"\\context Voice <<", ">>"}
-    defp brackets(name, false), do: {"\\context Voice = \"#{name}\" {", "}"}
-    defp brackets(name, true), do: {"\\context Voice = \"#{name}\" <<", ">>"}
   end
 end

@@ -1,21 +1,19 @@
-defmodule Exactly.StaffGroup do
+defmodule Exactly.Container do
   @moduledoc """
-  Models a lilypond StaffGroup context
+  Models a basic wrapper for serial or simultaneous lilypond elements
   """
 
-  defstruct [:elements, :name, :simultaneous]
+  defstruct [:elements, :simultaneous]
 
   @type t :: %__MODULE__{
           elements: [Exactly.score_element()],
-          name: String.t() | nil,
           simultaneous: boolean()
         }
 
-  def new(elements \\ [], name \\ nil, opts \\ []) do
+  def new(elements \\ [], opts \\ []) do
     %__MODULE__{
       elements: elements,
-      name: name,
-      simultaneous: Keyword.get(opts, :simultaneous, true)
+      simultaneous: Keyword.get(opts, :simultaneous, false)
     }
   end
 
@@ -23,11 +21,11 @@ defmodule Exactly.StaffGroup do
     import Inspect.Algebra
     import Exactly.Inspect
 
-    def inspect(%@for{elements: elements, name: name, simultaneous: simultaneous}, _opts) do
-      {open, close} = brackets(name, simultaneous)
+    def inspect(%@for{elements: elements, simultaneous: simultaneous}, _opts) do
+      {open, close} = brackets(simultaneous)
 
       concat([
-        "#Exactly.StaffGroup<",
+        "#Exactly.Container<",
         open,
         " #{length(elements)} ",
         close,
@@ -39,8 +37,8 @@ defmodule Exactly.StaffGroup do
   defimpl Exactly.ToLilypond do
     import Exactly.Lilypond.Utils
 
-    def to_lilypond(%@for{elements: elements, name: name, simultaneous: simultaneous}) do
-      {open, close} = brackets("StaffGroup", name, simultaneous)
+    def to_lilypond(%@for{elements: elements, simultaneous: simultaneous}) do
+      {open, close} = brackets(simultaneous)
 
       [
         open,
