@@ -5,6 +5,10 @@ defmodule Exactly.Score do
 
   defstruct [:elements]
 
+  @type t :: %__MODULE__{
+          elements: [Exactly.score_element()]
+        }
+
   def new(elements \\ []) do
     %__MODULE__{
       elements: elements
