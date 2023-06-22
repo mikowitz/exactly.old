@@ -12,6 +12,7 @@ alias Exactly.{
   Skip,
   Staff,
   Staffgroup,
+  TimeSignature,
   Tuplet,
   Voice
 }
