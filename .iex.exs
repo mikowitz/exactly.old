@@ -1,9 +1,11 @@
 alias Exactly.{
+  Barline,
   Chord,
   Clef,
   Container,
   Duration,
   Header,
+  KeySignature,
   MultiMeasureRest,
   Note,
   Pitch,
@@ -11,7 +13,7 @@ alias Exactly.{
   Score,
   Skip,
   Staff,
-  Staffgroup,
+  StaffGroup,
   TimeSignature,
   Tuplet,
   Voice
