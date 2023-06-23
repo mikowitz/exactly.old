@@ -54,16 +54,16 @@ defmodule Exactly.ScoreTest do
                String.trim("""
                \\score {
                  \\context Staff = "Flute" {
-                   c'4
-                   ef'4
+                   c4
+                   ef4
                  }
                  \\context StaffGroup = "Strings" <<
                    \\context Staff = "Violin" {
                      r4
-                     c'4
+                     c4
                    }
                    \\context Staff = "Cello" {
-                     c2
+                     c,2
                    }
                  >>
                }

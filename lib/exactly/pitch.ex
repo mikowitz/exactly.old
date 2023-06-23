@@ -38,9 +38,9 @@ defmodule Exactly.Pitch do
       Enum.at(@notes, note) <> Map.get(@accidentals, alter / 1) <> octave_mark(octave)
     end
 
-    defp octave_mark(-1), do: ""
-    defp octave_mark(o) when o < -1, do: String.duplicate(",", abs(o) - 1)
-    defp octave_mark(o) when o > -1, do: String.duplicate("'", o + 1)
+    defp octave_mark(0), do: ""
+    defp octave_mark(o) when o < 0, do: String.duplicate(",", abs(o))
+    defp octave_mark(o) when o > 0, do: String.duplicate("'", o)
   end
 
   defimpl Inspect do
