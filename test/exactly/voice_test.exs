@@ -126,9 +126,9 @@ defmodule Exactly.VoiceTest do
       assert Exactly.to_lilypond(voice) ==
                String.trim("""
                \\context Voice {
-                 c'4
+                 c4
                  r2
-                 d'4
+                 d4
                }
                """)
     end
@@ -147,9 +147,9 @@ defmodule Exactly.VoiceTest do
       assert Exactly.to_lilypond(voice) ==
                String.trim("""
                \\context Voice = "ViolinOne" {
-                 f'4
+                 f4
                  r2
-                 a'4
+                 a4
                }
                """)
     end
@@ -169,9 +169,9 @@ defmodule Exactly.VoiceTest do
       assert Exactly.to_lilypond(voice) ==
                String.trim("""
                \\context Voice = "ViolinOne" <<
-                 f'4
+                 f4
                  r2
-                 bf''4
+                 bf'4
                >>
                """)
     end

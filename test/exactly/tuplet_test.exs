@@ -26,7 +26,7 @@ defmodule Exactly.TupletTest do
           Note.new(Pitch.new(2, -0.5, 0))
         ])
 
-      assert inspect(tuplet) == "#Exactly.Tuplet<(2/3) { c'4 d'4 ef'4 }>"
+      assert inspect(tuplet) == "#Exactly.Tuplet<(2/3) { c4 d4 ef4 }>"
     end
   end
 
@@ -42,9 +42,9 @@ defmodule Exactly.TupletTest do
       assert Exactly.to_lilypond(tuplet) ==
                String.trim("""
                \\tuplet 3/2 {
-                 c'4
-                 d'4
-                 ef'4
+                 c4
+                 d4
+                 ef4
                }
                """)
     end

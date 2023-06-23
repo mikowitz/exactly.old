@@ -39,7 +39,7 @@ defmodule Exactly.Lilypond.FileTest do
                \\language "english"
 
                {
-                 c'4
+                 c4
                }
                """)
 
@@ -59,7 +59,7 @@ defmodule Exactly.Lilypond.FileTest do
                \\language "english"
 
                {
-                 c'4
+                 c4
                }
                """)
 

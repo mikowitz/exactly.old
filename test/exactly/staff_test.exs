@@ -160,10 +160,10 @@ defmodule Exactly.StaffTest do
                String.trim("""
                \\context Staff {
                  \\context Voice {
-                   c'4
-                   d'4
+                   c4
+                   d4
                  }
-                 e'2
+                 e2
                }
                """)
     end
@@ -185,10 +185,10 @@ defmodule Exactly.StaffTest do
                String.trim("""
                \\context Staff = "Flutes" {
                  \\context Voice {
-                   c'4
-                   d'4
+                   c4
+                   d4
                  }
-                 e'2
+                 e2
                }
                """)
     end
@@ -211,10 +211,10 @@ defmodule Exactly.StaffTest do
                String.trim("""
                \\context Staff = "Flutes" <<
                  \\context Voice {
-                   c'4
-                   d'4
+                   c4
+                   d4
                  }
-                 e'2
+                 e2
                >>
                """)
     end
@@ -237,10 +237,10 @@ defmodule Exactly.StaffTest do
                String.trim("""
                \\context Staff <<
                  \\context Voice {
-                   c'4
-                   d'4
+                   c4
+                   d4
                  }
-                 e'2
+                 e2
                >>
                """)
     end
