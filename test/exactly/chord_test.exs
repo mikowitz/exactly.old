@@ -29,7 +29,7 @@ defmodule Exactly.ChordTest do
           Duration.new(1 / 8)
         )
 
-      assert inspect(chord) == "#Exactly.Chord<<c' e' g'>8>"
+      assert inspect(chord) == "#Exactly.Chord<<c e g>8>"
     end
 
     test "empty chords do not have a duration printed" do
@@ -52,9 +52,9 @@ defmodule Exactly.ChordTest do
       assert chord |> Exactly.to_lilypond() ==
                String.trim("""
                <
-                 c'
-                 ef'
-                 g'
+                 c
+                 ef
+                 g
                >2..
                """)
     end

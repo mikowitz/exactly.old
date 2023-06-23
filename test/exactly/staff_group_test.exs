@@ -241,12 +241,12 @@ defmodule Exactly.StaffGroupTest do
                String.trim("""
                \\context StaffGroup <<
                  \\context Staff = "Violin" {
-                   c'4
-                   cs'4
+                   c4
+                   cs4
                  }
                  \\context Staff = "Viola" {
-                   e'4
-                   fqf'4
+                   e4
+                   fqf4
                  }
                >>
                """)
@@ -278,12 +278,12 @@ defmodule Exactly.StaffGroupTest do
                String.trim("""
                \\context StaffGroup = "Strings" <<
                  \\context Staff = "Violin" {
-                   c'4
-                   cs'4
+                   c4
+                   cs4
                  }
                  \\context Staff = "Viola" {
-                   e'4
-                   fqf'4
+                   e4
+                   fqf4
                  }
                >>
                """)
@@ -316,12 +316,12 @@ defmodule Exactly.StaffGroupTest do
                String.trim("""
                \\context StaffGroup = "Strings" {
                  \\context Staff = "Violin" {
-                   c'4
-                   cs'4
+                   c4
+                   cs4
                  }
                  \\context Staff = "Viola" {
-                   e'4
-                   fqf'4
+                   e4
+                   fqf4
                  }
                }
                """)
@@ -354,12 +354,12 @@ defmodule Exactly.StaffGroupTest do
                String.trim("""
                \\context StaffGroup {
                  \\context Staff = "Violin" {
-                   c'4
-                   cs'4
+                   c4
+                   cs4
                  }
                  \\context Staff = "Viola" {
-                   e'4
-                   fqf'4
+                   e4
+                   fqf4
                  }
                }
                """)

@@ -42,7 +42,7 @@ defmodule Exactly.ContainerTest do
       assert Exactly.to_lilypond(container) ==
                String.trim("""
                {
-                 c'4
+                 c4
                }
                """)
     end
@@ -53,7 +53,7 @@ defmodule Exactly.ContainerTest do
       assert Exactly.to_lilypond(container) ==
                String.trim("""
                <<
-                 c'4
+                 c4
                >>
                """)
     end
