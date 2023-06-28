@@ -1,7 +1,7 @@
 defmodule Exactly.ScoreTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Duration, Note, Pitch, Rest, Score, Staff, StaffGroup}
+  alias Exactly.{Duration, Header, Note, Pitch, Rest, Score, Staff, StaffGroup}
 
   setup do
     score =
@@ -53,18 +53,48 @@ defmodule Exactly.ScoreTest do
       assert Exactly.to_lilypond(score) ==
                String.trim("""
                \\score {
-                 \\context Staff = "Flute" {
-                   c4
-                   ef4
-                 }
-                 \\context StaffGroup = "Strings" <<
-                   \\context Staff = "Violin" {
-                     r4
+                 <<
+                   \\context Staff = "Flute" {
                      c4
+                     ef4
                    }
-                   \\context Staff = "Cello" {
-                     c,2
+                   \\context StaffGroup = "Strings" <<
+                     \\context Staff = "Violin" {
+                       r4
+                       c4
+                     }
+                     \\context Staff = "Cello" {
+                       c,2
+                     }
+                   >>
+                 >>
+               }
+               """)
+    end
+
+    test "header is correctly nested", %{score: score} do
+      score = Score.set_header(score, Header.new(piece: "Trio"))
+
+      assert Exactly.to_lilypond(score) ==
+               String.trim("""
+               \\score {
+                 \\header {
+                   piece = "Trio"
+                 }
+                 <<
+                   \\context Staff = "Flute" {
+                     c4
+                     ef4
                    }
+                   \\context StaffGroup = "Strings" <<
+                     \\context Staff = "Violin" {
+                       r4
+                       c4
+                     }
+                     \\context Staff = "Cello" {
+                       c,2
+                     }
+                   >>
                  >>
                }
                """)

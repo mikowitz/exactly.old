@@ -48,8 +48,7 @@ defmodule Exactly.Header do
         format_settings(settings),
         "}"
       ]
-      |> List.flatten()
-      |> Enum.join("\n")
+      |> concat()
     end
 
     defp format_settings(settings) do

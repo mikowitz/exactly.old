@@ -56,8 +56,7 @@ defmodule Exactly.Chord do
         end),
         ">#{@protocol.to_lilypond(duration)}"
       ]
-      |> List.flatten()
-      |> Enum.join("\n")
+      |> concat()
     end
   end
 end

@@ -2,7 +2,7 @@ defmodule Exactly.Lilypond.FileTest do
   use ExUnit.Case, async: true
   import ExUnit.CaptureIO
 
-  alias Exactly.{Container, Note, Voice}
+  alias Exactly.{Container, Header, Note, Score, Voice}
   alias Exactly.Lilypond.File, as: LilypondFile
 
   describe "from/1" do
@@ -23,6 +23,17 @@ defmodule Exactly.Lilypond.FileTest do
 
       assert is_struct(file.content, Voice)
     end
+
+    test "can take a list of score elements" do
+      score = Score.new([Note.new()])
+
+      file = LilypondFile.from([score, Note.new()])
+
+      assert is_list(file.content)
+
+      assert is_struct(Enum.at(file.content, 0), Score)
+      assert is_struct(Enum.at(file.content, 1), Container)
+    end
   end
 
   describe "save/1" do
@@ -37,6 +48,62 @@ defmodule Exactly.Lilypond.FileTest do
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
+
+               {
+                 c4
+               }
+               """)
+
+      :ok = File.rm(file.source_path)
+    end
+
+    test "saves a file correctly with a header" do
+      file = LilypondFile.from(Note.new())
+
+      file =
+        file
+        |> LilypondFile.set_header(Header.new(tagline: false, title: "Exactly Example"))
+        |> LilypondFile.save()
+
+      assert String.match?(file.source_path, Regex.compile!(Path.expand("~/.exactly")))
+
+      assert File.read!(file.source_path) ==
+               String.trim("""
+               \\version "#{Exactly.lilypond_version()}"
+               \\language "english"
+
+               \\header {
+                 tagline = ##f
+                 title = "Exactly Example"
+               }
+
+               {
+                 c4
+               }
+               """)
+
+      :ok = File.rm(file.source_path)
+    end
+
+    test "saves a file with multiple top-level contexts" do
+      score = Score.new([Note.new()])
+
+      file =
+        LilypondFile.from([score, Note.new()])
+        |> LilypondFile.save()
+
+      assert String.match?(file.source_path, Regex.compile!(Path.expand("~/.exactly")))
+
+      assert File.read!(file.source_path) ==
+               String.trim("""
+               \\version "#{Exactly.lilypond_version()}"
+               \\language "english"
+
+               \\score {
+                 <<
+                   c4
+                 >>
+               }
 
                {
                  c4

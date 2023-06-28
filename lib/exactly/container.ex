@@ -47,8 +47,7 @@ defmodule Exactly.Container do
         end),
         close
       ]
-      |> List.flatten()
-      |> Enum.join("\n")
+      |> concat()
     end
   end
 end
