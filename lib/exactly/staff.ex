@@ -49,8 +49,7 @@ defmodule Exactly.Staff do
         end),
         close
       ]
-      |> List.flatten()
-      |> Enum.join("\n")
+      |> concat()
     end
   end
 end

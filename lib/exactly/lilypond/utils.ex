@@ -1,10 +1,25 @@
 defmodule Exactly.Lilypond.Utils do
   @moduledoc false
 
-  def indent(s) do
+  def indent(s, depth \\ 1)
+  def indent(nil, _), do: nil
+
+  def indent(s, depth) when is_bitstring(s) do
     s
-    |> String.split("\n", trim: true)
-    |> Enum.map_join("\n", &"  #{&1}")
+    |> String.trim()
+    |> String.split("\n")
+    # |> Enum.map_join("\n", &"#{String.duplicate("  ", depth)}#{&1}")
+    |> Enum.map_join("\n", fn
+      "" -> ""
+      s -> "#{String.duplicate("  ", depth)}#{s}"
+    end)
+  end
+
+  def concat(l, joiner \\ "\n") do
+    l
+    |> List.flatten()
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(joiner)
   end
 
   def brackets(false), do: {"{", "}"}

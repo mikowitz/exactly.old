@@ -51,8 +51,7 @@ defmodule Exactly.Tuplet do
         end),
         "}"
       ]
-      |> List.flatten()
-      |> Enum.join("\n")
+      |> concat()
     end
   end
 end
