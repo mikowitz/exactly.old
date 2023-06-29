@@ -7,14 +7,14 @@ defmodule Exactly.Chord do
   no duration.
   """
 
+  alias Exactly.{Duration, Pitch}
+
   defstruct [:pitches, :duration]
 
   @type t :: %__MODULE__{
           pitches: [Pitch.t()],
           duration: Duration.t()
         }
-
-  alias Exactly.Duration
 
   def new(pitches \\ [], duration \\ Duration.new(1 / 4)) do
     %__MODULE__{pitches: pitches, duration: duration}
