@@ -22,6 +22,7 @@ defmodule Exactly.MixProject do
   defp deps do
     [
       {:credo, "~> 1.7.0", only: [:test], runtime: false},
+      {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:test], runtime: false}
     ]
   end

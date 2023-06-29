@@ -3,13 +3,13 @@ defmodule Exactly.Skip do
   Models a Lilypond skip rest.
   """
 
+  alias Exactly.Duration
+
   defstruct [:duration]
 
   @type t :: %__MODULE__{
           duration: Duration.t()
         }
-
-  alias Exactly.Duration
 
   def new(duration \\ Duration.new(1 / 4)) do
     %__MODULE__{
