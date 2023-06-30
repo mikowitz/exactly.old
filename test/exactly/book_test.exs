@@ -29,6 +29,15 @@ defmodule Exactly.BookTest do
     end
   end
 
+  describe "new/2" do
+    test "can take an optional keyword list of output settings", context do
+      book = Book.new([context.bookpart1], output_suffix: "test", output_name: "my-score")
+
+      assert book.output_suffix == "test"
+      assert book.output_name == "my-score"
+    end
+  end
+
   describe "set_header/2" do
     test "can add a header", context do
       book =
@@ -54,6 +63,43 @@ defmodule Exactly.BookTest do
       assert Exactly.to_lilypond(book) ==
                String.trim("""
                \\book {
+                 \\bookpart {
+                   \\header {
+                     title = "Bookpart1"
+                   }
+                   \\score {
+                     \\header {
+                       title = "Score 1"
+                     }
+                     <<
+                       c4
+                     >>
+                   }
+                 }
+                 \\bookpart {
+                   \\score {
+                     <<
+                       d4
+                     >>
+                   }
+                 }
+               }
+               """)
+    end
+
+    test "returns the correct Lilypond string for the book including bookOutput settings",
+         context do
+      book =
+        Book.new([context.bookpart1, context.bookpart2],
+          output_name: "output-score",
+          output_suffix: "suffix"
+        )
+
+      assert Exactly.to_lilypond(book) ==
+               String.trim("""
+               \\book {
+                 \\bookOutputSuffix "suffix"
+                 \\bookOutputName "output-score"
                  \\bookpart {
                    \\header {
                      title = "Bookpart1"

@@ -2,7 +2,7 @@ defmodule Exactly.Lilypond.FileTest do
   use ExUnit.Case, async: true
   import ExUnit.CaptureIO
 
-  alias Exactly.{Container, Header, Note, Score, Voice}
+  alias Exactly.{Book, Bookpart, Container, Header, Note, Pitch, Score, Voice}
   alias Exactly.Lilypond.File, as: LilypondFile
 
   describe "from/1" do
@@ -113,6 +113,87 @@ defmodule Exactly.Lilypond.FileTest do
       :ok = File.rm(file.source_path)
     end
 
+    test "saves a file with a top-level bookpart" do
+      bookpart = Bookpart.new([Score.new([Note.new()])])
+
+      file =
+        LilypondFile.from(bookpart)
+        |> LilypondFile.save()
+
+      assert File.read!(file.source_path) ==
+               String.trim("""
+               \\version "#{Exactly.lilypond_version()}"
+               \\language "english"
+
+               \\bookpart {
+                 \\score {
+                   <<
+                     c4
+                   >>
+                 }
+               }
+               """)
+    end
+
+    test "saves a file with a top-level book" do
+      book = Book.new([Bookpart.new([Score.new([Note.new()])])])
+
+      file =
+        LilypondFile.from(book)
+        |> LilypondFile.save()
+
+      assert File.read!(file.source_path) ==
+               String.trim("""
+               \\version "#{Exactly.lilypond_version()}"
+               \\language "english"
+
+               \\book {
+                 \\bookpart {
+                   \\score {
+                     <<
+                       c4
+                     >>
+                   }
+                 }
+               }
+               """)
+    end
+
+    test "saves a file with multiple top-level books" do
+      book1 = Book.new([Bookpart.new([Score.new([Note.new()])])])
+      book2 = Book.new([Bookpart.new([Score.new([Note.new(Pitch.new(1))])])])
+
+      file =
+        LilypondFile.from([book1, book2])
+        |> LilypondFile.save()
+
+      assert File.read!(file.source_path) ==
+               String.trim("""
+               \\version "#{Exactly.lilypond_version()}"
+               \\language "english"
+
+               \\book {
+                 \\bookpart {
+                   \\score {
+                     <<
+                       c4
+                     >>
+                   }
+                 }
+               }
+
+               \\book {
+                 \\bookpart {
+                   \\score {
+                     <<
+                       d4
+                     >>
+                   }
+                 }
+               }
+               """)
+    end
+
     test "saves the file to specified location" do
       file = LilypondFile.from(Note.new())
 
@@ -150,5 +231,109 @@ defmodule Exactly.Lilypond.FileTest do
                output
              )
     end
+  end
+
+  describe "compiling using lilypond" do
+    @describetag :lilypond
+
+    test "saves multiple books to the default numbered locations" do
+      book1 = Book.new([Score.new([Note.new()])])
+      book2 = Book.new([Score.new([Note.new()])])
+
+      file =
+        LilypondFile.from([book1, book2])
+        |> LilypondFile.save("books.ly")
+
+      output_path = Path.rootname(file.source_path)
+
+      [
+        Exactly.lilypond_executable(),
+        "-o",
+        output_path,
+        file.source_path
+      ]
+      |> compile()
+
+      assert_files_exist(["./books.ly", "./books.pdf", "./books-1.pdf"])
+    end
+
+    test "saves multiple books with provided suffixes" do
+      book1 = Book.new([Score.new([Note.new()])], output_suffix: "test")
+      book2 = Book.new([Score.new([Note.new()])], output_suffix: "example")
+
+      file =
+        LilypondFile.from([book1, book2])
+        |> LilypondFile.save("books.ly")
+
+      output_path = Path.rootname(file.source_path)
+
+      [
+        Exactly.lilypond_executable(),
+        "-o",
+        output_path,
+        file.source_path
+      ]
+      |> compile()
+
+      assert_files_exist(["./books.ly", "./books-test.pdf", "./books-example.pdf"])
+    end
+
+    test "saves multiple books with provided names" do
+      book1 = Book.new([Score.new([Note.new()])], output_name: "test")
+      book2 = Book.new([Score.new([Note.new()])], output_name: "example")
+
+      file =
+        LilypondFile.from([book1, book2])
+        |> LilypondFile.save("books.ly")
+
+      output_path = Path.rootname(file.source_path)
+
+      [
+        Exactly.lilypond_executable(),
+        "-o",
+        output_path,
+        file.source_path
+      ]
+      |> compile()
+
+      assert_files_exist(["./books.ly", "./test.pdf", "./example.pdf"])
+    end
+
+    test "saves multiple books with provided names + suffixes" do
+      book1 = Book.new([Score.new([Note.new()])], output_suffix: "my-test", output_name: "test")
+
+      book2 =
+        Book.new([Score.new([Note.new()])], output_suffix: "your-test", output_name: "example")
+
+      file =
+        LilypondFile.from([book1, book2])
+        |> LilypondFile.save("books.ly")
+
+      output_path = Path.rootname(file.source_path)
+
+      [
+        Exactly.lilypond_executable(),
+        "-o",
+        output_path,
+        file.source_path
+      ]
+      |> compile()
+
+      assert_files_exist(["./books.ly", "./test-my-test.pdf", "./example-your-test.pdf"])
+    end
+  end
+
+  defp assert_files_exist(files) when is_list(files) do
+    for file <- files do
+      assert File.exists?(file)
+      :ok = File.rm(file)
+    end
+  end
+
+  defp compile(cmd) do
+    cmd
+    |> Enum.join(" ")
+    |> to_charlist()
+    |> :os.cmd()
   end
 end
