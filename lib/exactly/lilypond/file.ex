@@ -9,7 +9,7 @@ defmodule Exactly.Lilypond.File do
   # Allow us to pass an alternative command in testing to avoid needing to install Lilypond in CI
   @runner Application.compile_env(:exactly, :runner, &:os.cmd/1)
 
-  alias Exactly.{Container, Header}
+  alias Exactly.{Book, Bookpart, Container, Header}
   alias Exactly.Lilypond.Utils, as: LilypondUtils
 
   defstruct [:content, :source_path, :output_path, header: nil]
@@ -21,6 +21,14 @@ defmodule Exactly.Lilypond.File do
           header: Header.t() | nil
         }
 
+  def from(%Book{} = book) do
+    %__MODULE__{content: book}
+  end
+
+  def from(%Bookpart{} = bookpart) do
+    %__MODULE__{content: bookpart}
+  end
+
   def from(%{elements: _} = content) do
     %__MODULE__{content: content}
   end
@@ -28,6 +36,8 @@ defmodule Exactly.Lilypond.File do
   def from(content_list) when is_list(content_list) do
     wrapped_contents =
       Enum.map(content_list, fn
+        %Book{} = book -> book
+        %Bookpart{} = bookpart -> bookpart
         %{elements: _} = content -> content
         content -> Container.new([content])
       end)
