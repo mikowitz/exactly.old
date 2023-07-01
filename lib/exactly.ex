@@ -29,4 +29,54 @@ defmodule Exactly do
     |> LilypondFile.compile()
     |> LilypondFile.show()
   end
+
+  defmacro container(do: do_block) do
+    elements =
+      case do_block do
+        {:__block__, _, els} -> Enum.map(els, &process_element/1)
+        el -> [el]
+      end
+
+    quote do
+      Exactly.Container.new([unquote_splicing(elements)])
+    end
+  end
+
+  defmacro book(do: do_block) do
+    with elements <- extract_elements(do_block),
+         {output_name, elements} <- extract_output_name(elements),
+         {output_suffix, elements} <- extract_output_suffix(elements) do
+      quote do
+        Exactly.Book.new([unquote_splicing(elements)],
+          output_suffix: unquote(output_suffix),
+          output_name: unquote(output_name)
+        )
+      end
+    end
+  end
+
+  defp extract_elements({:__block__, _, els}), do: Enum.map(els, &process_element/1)
+  defp extract_elements(el), do: [process_element(el)]
+
+  defp extract_output_name(elements) do
+    case Enum.find(elements, fn
+           {:output_name, _, _} -> true
+           _ -> false
+         end) do
+      {:output_name, _, [name]} = el -> {name, List.delete(elements, el)}
+      nil -> {nil, elements}
+    end
+  end
+
+  defp extract_output_suffix(elements) do
+    case Enum.find(elements, fn
+           {:output_suffix, _, _} -> true
+           _ -> false
+         end) do
+      {:output_suffix, _, [suffix]} = el -> {suffix, List.delete(elements, el)}
+      nil -> {nil, elements}
+    end
+  end
+
+  def process_element(el), do: el
 end
