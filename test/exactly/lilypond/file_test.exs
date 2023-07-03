@@ -1,6 +1,5 @@
 defmodule Exactly.Lilypond.FileTest do
   use ExUnit.Case, async: true
-  import ExUnit.CaptureIO
 
   alias Exactly.{Book, Bookpart, Container, Header, Note, Pitch, Score, Voice}
   alias Exactly.Lilypond.File, as: LilypondFile
@@ -42,9 +41,9 @@ defmodule Exactly.Lilypond.FileTest do
 
       file = LilypondFile.save(file)
 
-      assert String.match?(file.source_path, Regex.compile!(Path.expand("~/.exactly")))
+      assert String.match?(file.source_file, Regex.compile!(Path.expand("~/.exactly")))
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -54,7 +53,7 @@ defmodule Exactly.Lilypond.FileTest do
                }
                """)
 
-      :ok = File.rm(file.source_path)
+      :ok = File.rm(file.source_file)
     end
 
     test "saves a file correctly with a header" do
@@ -65,9 +64,9 @@ defmodule Exactly.Lilypond.FileTest do
         |> LilypondFile.set_header(Header.new(tagline: false, title: "Exactly Example"))
         |> LilypondFile.save()
 
-      assert String.match?(file.source_path, Regex.compile!(Path.expand("~/.exactly")))
+      assert String.match?(file.source_file, Regex.compile!(Path.expand("~/.exactly")))
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -82,7 +81,7 @@ defmodule Exactly.Lilypond.FileTest do
                }
                """)
 
-      :ok = File.rm(file.source_path)
+      :ok = File.rm(file.source_file)
     end
 
     test "saves a file with multiple top-level contexts" do
@@ -92,9 +91,9 @@ defmodule Exactly.Lilypond.FileTest do
         LilypondFile.from([score, Note.new()])
         |> LilypondFile.save()
 
-      assert String.match?(file.source_path, Regex.compile!(Path.expand("~/.exactly")))
+      assert String.match?(file.source_file, Regex.compile!(Path.expand("~/.exactly")))
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -110,7 +109,7 @@ defmodule Exactly.Lilypond.FileTest do
                }
                """)
 
-      :ok = File.rm(file.source_path)
+      :ok = File.rm(file.source_file)
     end
 
     test "saves a file with a top-level bookpart" do
@@ -120,7 +119,7 @@ defmodule Exactly.Lilypond.FileTest do
         LilypondFile.from(bookpart)
         |> LilypondFile.save()
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -142,7 +141,7 @@ defmodule Exactly.Lilypond.FileTest do
         LilypondFile.from(book)
         |> LilypondFile.save()
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -167,7 +166,7 @@ defmodule Exactly.Lilypond.FileTest do
         LilypondFile.from([book1, book2])
         |> LilypondFile.save()
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -199,9 +198,9 @@ defmodule Exactly.Lilypond.FileTest do
 
       file = LilypondFile.save(file, "location.ly")
 
-      assert file.source_path == Path.join(Path.expand("."), "location.ly")
+      assert file.source_file == Path.join(Path.expand("."), "location.ly")
 
-      assert File.read!(file.source_path) ==
+      assert File.read!(file.source_file) ==
                String.trim("""
                \\version "#{Exactly.lilypond_version()}"
                \\language "english"
@@ -211,30 +210,25 @@ defmodule Exactly.Lilypond.FileTest do
                }
                """)
 
-      :ok = File.rm(file.source_path)
-    end
-  end
-
-  describe "compile/1" do
-    test "correctly runs the compilation code" do
-      file = LilypondFile.from(Note.new())
-
-      output =
-        capture_io(fn ->
-          file
-          |> LilypondFile.save()
-          |> LilypondFile.compile()
-        end)
-
-      assert Regex.match?(
-               ~r/#{Exactly.lilypond_executable()} -s -o (.*) \1\.ly/,
-               output
-             )
+      :ok = File.rm(file.source_file)
     end
   end
 
   describe "compiling using lilypond" do
     @describetag :lilypond
+
+    test "saves a file to the default  location" do
+      score = Score.new([Note.new()])
+
+      file =
+        LilypondFile.from(score)
+        |> LilypondFile.save("books.ly")
+        |> LilypondFile.compile()
+
+      assert file.output_files == [Path.expand("books.pdf")]
+
+      assert_files_exist(["./books.ly", "./books.pdf"])
+    end
 
     test "saves multiple books to the default numbered locations" do
       book1 = Book.new([Score.new([Note.new()])])
@@ -243,16 +237,12 @@ defmodule Exactly.Lilypond.FileTest do
       file =
         LilypondFile.from([book1, book2])
         |> LilypondFile.save("books.ly")
+        |> LilypondFile.compile()
 
-      output_path = Path.rootname(file.source_path)
-
-      [
-        Exactly.lilypond_executable(),
-        "-o",
-        output_path,
-        file.source_path
-      ]
-      |> compile()
+      assert file.output_files == [
+               Path.expand("books.pdf"),
+               Path.expand("books-1.pdf")
+             ]
 
       assert_files_exist(["./books.ly", "./books.pdf", "./books-1.pdf"])
     end
@@ -264,16 +254,12 @@ defmodule Exactly.Lilypond.FileTest do
       file =
         LilypondFile.from([book1, book2])
         |> LilypondFile.save("books.ly")
+        |> LilypondFile.compile()
 
-      output_path = Path.rootname(file.source_path)
-
-      [
-        Exactly.lilypond_executable(),
-        "-o",
-        output_path,
-        file.source_path
-      ]
-      |> compile()
+      assert file.output_files == [
+               Path.expand("books-test.pdf"),
+               Path.expand("books-example.pdf")
+             ]
 
       assert_files_exist(["./books.ly", "./books-test.pdf", "./books-example.pdf"])
     end
@@ -285,16 +271,12 @@ defmodule Exactly.Lilypond.FileTest do
       file =
         LilypondFile.from([book1, book2])
         |> LilypondFile.save("books.ly")
+        |> LilypondFile.compile()
 
-      output_path = Path.rootname(file.source_path)
-
-      [
-        Exactly.lilypond_executable(),
-        "-o",
-        output_path,
-        file.source_path
-      ]
-      |> compile()
+      assert file.output_files == [
+               Path.expand("test.pdf"),
+               Path.expand("example.pdf")
+             ]
 
       assert_files_exist(["./books.ly", "./test.pdf", "./example.pdf"])
     end
@@ -308,16 +290,12 @@ defmodule Exactly.Lilypond.FileTest do
       file =
         LilypondFile.from([book1, book2])
         |> LilypondFile.save("books.ly")
+        |> LilypondFile.compile()
 
-      output_path = Path.rootname(file.source_path)
-
-      [
-        Exactly.lilypond_executable(),
-        "-o",
-        output_path,
-        file.source_path
-      ]
-      |> compile()
+      assert file.output_files == [
+               Path.expand("test-my-test.pdf"),
+               Path.expand("example-your-test.pdf")
+             ]
 
       assert_files_exist(["./books.ly", "./test-my-test.pdf", "./example-your-test.pdf"])
     end
@@ -328,12 +306,5 @@ defmodule Exactly.Lilypond.FileTest do
       assert File.exists?(file)
       :ok = File.rm(file)
     end
-  end
-
-  defp compile(cmd) do
-    cmd
-    |> Enum.join(" ")
-    |> to_charlist()
-    |> :os.cmd()
   end
 end

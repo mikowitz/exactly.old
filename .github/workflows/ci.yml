@@ -25,6 +25,9 @@ jobs:
         elixir: ["1.14.5"]
 
     steps:
+      - name: Install lilypond
+        run: sudo apt-get install lilypond
+
       - uses: actions/checkout@v3
 
       - name: Set up Elixir
@@ -56,4 +59,4 @@ jobs:
           mix format --check-formatted
 
       - name: Run tests
-        run: mix test
+        run: mix test --include lilypond
