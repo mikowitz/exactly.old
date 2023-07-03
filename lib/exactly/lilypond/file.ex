@@ -6,18 +6,15 @@ defmodule Exactly.Lilypond.File do
   @temp_directory Path.expand("~/.exactly")
   :ok = File.mkdir_p(@temp_directory)
 
-  # Allow us to pass an alternative command in testing to avoid needing to install Lilypond in CI
-  @runner Application.compile_env(:exactly, :runner, &:os.cmd/1)
-
   alias Exactly.{Book, Bookpart, Container, Header}
   alias Exactly.Lilypond.Utils, as: LilypondUtils
 
-  defstruct [:content, :source_path, :output_path, header: nil]
+  defstruct [:content, :source_file, :output_files, header: nil]
 
   @type t :: %__MODULE__{
           content: any(),
-          source_path: String.t() | nil,
-          output_path: String.t() | nil,
+          source_file: String.t() | nil,
+          output_files: [String.t()] | nil,
           header: Header.t() | nil
         }
 
@@ -55,38 +52,39 @@ defmodule Exactly.Lilypond.File do
 
   def save(
         %__MODULE__{content: content, header: header} = file,
-        source_path \\ generate_source_path()
+        source_file \\ generate_source_file()
       ) do
-    source_path = Path.expand(source_path)
+    source_file = Path.expand(source_file)
     lilypond_contents = build_lilypond_contents(content, header)
-    :ok = File.write(source_path, lilypond_contents)
-    %{file | source_path: source_path}
+    :ok = File.write(source_file, lilypond_contents)
+    %{file | source_file: source_file}
   end
 
-  def compile(%__MODULE__{source_path: source_path} = file) do
-    output_path = Path.rootname(source_path)
+  def compile(%__MODULE__{source_file: source_file} = file) do
+    output_path = Path.rootname(source_file)
 
-    [
-      Exactly.lilypond_executable(),
-      "-s",
-      "-o",
-      output_path,
-      source_path
-    ]
-    |> Enum.join(" ")
-    |> run_command()
+    {output, 0} =
+      [
+        Exactly.lilypond_executable(),
+        "-o",
+        output_path,
+        source_file
+      ]
+      |> run_command()
 
-    %{file | output_path: output_path <> ".pdf"}
+    output_files =
+      Regex.scan(~r/Converting to `(.*)'/, output)
+      |> Enum.map(fn [_, filename] -> Path.absname(filename, Path.dirname(output_path)) end)
+
+    %{file | output_files: output_files}
   end
 
-  def show(%__MODULE__{output_path: output_path}) when not is_nil(output_path) do
-    run_command("open #{output_path}")
+  def show(%__MODULE__{output_files: output_files}) when not is_nil(output_files) do
+    run_command(["open" | output_files])
   end
 
-  def run_command(command) do
-    command
-    |> to_charlist()
-    |> then(&@runner.(&1))
+  def run_command([command | args]) do
+    System.cmd(command, args, stderr_to_stdout: true)
   end
 
   defp build_lilypond_contents(content, header) do
@@ -110,7 +108,7 @@ defmodule Exactly.Lilypond.File do
 
   defp build_content(content), do: build_content([content])
 
-  defp generate_source_path do
+  defp generate_source_file do
     [
       DateTime.utc_now() |> Calendar.strftime("%Y-%m-%d-%H-%M-%S"),
       "-",
