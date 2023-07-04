@@ -1,19 +1,24 @@
 defmodule Exactly.NoteTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Duration, Note, Pitch}
+  alias Exactly.{Duration, Note, Notehead, Pitch}
 
   describe "new/0" do
     test "defaults to c'4" do
       assert Note.new() == %Note{
-               duration: %Duration{
+               written_duration: %Duration{
                  log: 2,
                  dots: 0
                },
-               pitch: %Pitch{
-                 note: 0,
-                 alter: 0,
-                 octave: 0
+               notehead: %Notehead{
+                 written_pitch: %Pitch{
+                   note: 0,
+                   alter: 0,
+                   octave: 0
+                 },
+                 is_forced: false,
+                 is_cautionary: false,
+                 is_parethesized: false
                }
              }
     end
@@ -22,8 +27,17 @@ defmodule Exactly.NoteTest do
   describe "new/2" do
     test "takes pitch and duration arguments" do
       assert Note.new(Pitch.new(0, 0.5, 2), Duration.new(1 / 2)) == %Note{
-               duration: %Duration{log: 1, dots: 0},
-               pitch: %Pitch{note: 0, alter: 0.5, octave: 2}
+               written_duration: %Duration{log: 1, dots: 0},
+               notehead: %Notehead{
+                 written_pitch: %Pitch{
+                   note: 0,
+                   alter: 0.5,
+                   octave: 2
+                 },
+                 is_forced: false,
+                 is_cautionary: false,
+                 is_parethesized: false
+               }
              }
     end
   end

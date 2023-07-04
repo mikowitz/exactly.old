@@ -5,20 +5,20 @@ defmodule Exactly.Rest do
 
   alias Exactly.Duration
 
-  defstruct [:duration]
+  defstruct [:written_duration]
 
   @type t :: %__MODULE__{
-          duration: Duration.t()
+          written_duration: Duration.t()
         }
 
   def new(duration \\ Duration.new(1 / 4)) do
     %__MODULE__{
-      duration: duration
+      written_duration: duration
     }
   end
 
   defimpl String.Chars do
-    def to_string(%Exactly.Rest{duration: duration}) do
+    def to_string(%Exactly.Rest{written_duration: duration}) do
       "r" <> @protocol.to_string(duration)
     end
   end

@@ -12,8 +12,8 @@ defmodule Exactly.ChordTest do
                  Pitch.new(4, 0, 0)
                ])
 
-      assert chord.duration == Duration.new(1 / 4)
-      assert length(chord.pitches) == 3
+      assert chord.written_duration == Duration.new(1 / 4)
+      assert length(chord.noteheads) == 3
     end
   end
 
@@ -32,8 +32,8 @@ defmodule Exactly.ChordTest do
       assert inspect(chord) == "#Exactly.Chord<<c e g>8>"
     end
 
-    test "empty chords do not have a duration printed" do
-      assert Chord.new() |> inspect() == "#Exactly.Chord<<>>"
+    test "empty chords have a duration printed" do
+      assert Chord.new() |> inspect() == "#Exactly.Chord<<>4>"
     end
   end
 
@@ -59,8 +59,8 @@ defmodule Exactly.ChordTest do
                """)
     end
 
-    test "empty chords do not have a duration printed" do
-      assert Chord.new() |> Exactly.to_lilypond() == "<>"
+    test "empty chords have a duration printed" do
+      assert Chord.new() |> Exactly.to_lilypond() == "<>4"
     end
   end
 end

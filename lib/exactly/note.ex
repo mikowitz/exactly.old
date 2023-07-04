@@ -3,25 +3,34 @@ defmodule Exactly.Note do
   Models a Lilypond note event.
   """
 
-  defstruct [:duration, :pitch]
+  alias Exactly.{Duration, Notehead, Pitch}
+
+  defstruct [:written_duration, :notehead]
 
   @type t :: %__MODULE__{
-          duration: Exactly.Duration.t(),
-          pitch: Exactly.Pitch.t()
+          written_duration: Duration.t(),
+          notehead: Notehead.t()
         }
 
-  alias Exactly.{Duration, Pitch}
+  def new(notehead \\ Notehead.new(), duration \\ Duration.new(1 / 4))
 
-  def new(pitch \\ Pitch.new(), duration \\ Duration.new(1 / 4)) do
+  def new(%Notehead{} = notehead, duration) do
     %__MODULE__{
-      duration: duration,
-      pitch: pitch
+      written_duration: duration,
+      notehead: notehead
+    }
+  end
+
+  def new(%Pitch{} = pitch, duration) do
+    %__MODULE__{
+      written_duration: duration,
+      notehead: Notehead.new(pitch)
     }
   end
 
   defimpl String.Chars do
-    def to_string(%Exactly.Note{pitch: pitch, duration: duration}) do
-      @protocol.to_string(pitch) <> @protocol.to_string(duration)
+    def to_string(%Exactly.Note{notehead: notehead, written_duration: duration}) do
+      Exactly.to_lilypond(notehead) <> @protocol.to_string(duration)
     end
   end
 

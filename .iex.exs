@@ -1,5 +1,7 @@
 alias Exactly.{
   Barline,
+  Book,
+  Bookpart,
   Chord,
   Clef,
   Container,
@@ -8,6 +10,7 @@ alias Exactly.{
   KeySignature,
   MultiMeasureRest,
   Note,
+  Notehead,
   Pitch,
   Rest,
   Score,
@@ -18,5 +21,7 @@ alias Exactly.{
   Tuplet,
   Voice
 }
+
+alias Lilypond.File, as: LilypondFile
 
 import Exactly, only: [to_lilypond: 1, show: 1]

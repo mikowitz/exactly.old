@@ -7,56 +7,63 @@ defmodule Exactly.Chord do
   no duration.
   """
 
-  alias Exactly.{Duration, Pitch}
+  alias Exactly.{Duration, Notehead, Pitch}
 
-  defstruct [:pitches, :duration]
+  defstruct [:noteheads, :written_duration]
 
   @type t :: %__MODULE__{
-          pitches: [Pitch.t()],
-          duration: Duration.t()
+          noteheads: [Notehead.t()],
+          written_duration: Duration.t()
         }
 
-  def new(pitches \\ [], duration \\ Duration.new(1 / 4)) do
-    %__MODULE__{pitches: pitches, duration: duration}
+  def new(noteheads \\ [], duration \\ Duration.new(1 / 4)) do
+    %__MODULE__{noteheads: parse_noteheads(noteheads), written_duration: duration}
   end
+
+  defp parse_noteheads(noteheads) do
+    Enum.map(noteheads, &parse_notehead/1)
+  end
+
+  defp parse_notehead(%Notehead{} = notehead), do: notehead
+  defp parse_notehead(%Pitch{} = pitch), do: Notehead.new(pitch)
 
   defimpl Inspect do
     import Inspect.Algebra
 
-    def inspect(%Exactly.Chord{pitches: []}, _opts) do
-      "#Exactly.Chord<<>>"
-    end
-
-    def inspect(%Exactly.Chord{pitches: pitches, duration: duration}, _opts) do
+    def inspect(%Exactly.Chord{noteheads: noteheads, written_duration: duration}, _opts) do
       concat([
         "#Exactly.Chord<",
         "<",
-        inspect_pitches(pitches),
+        inspect_noteheads(noteheads),
         ">",
         to_string(duration),
         ">"
       ])
     end
 
-    defp inspect_pitches(pitches) do
-      pitches |> Enum.map_join(" ", &to_string/1)
+    defp inspect_noteheads(pitches) do
+      pitches |> Enum.map_join(" ", &Exactly.to_lilypond/1)
     end
   end
 
   defimpl Exactly.ToLilypond do
     import Exactly.Lilypond.Utils
 
-    def to_lilypond(%Exactly.Chord{pitches: []}), do: "<>"
+    def to_lilypond(%Exactly.Chord{noteheads: noteheads, written_duration: duration}) do
+      joiner =
+        case noteheads do
+          [] -> ""
+          _ -> "\n"
+        end
 
-    def to_lilypond(%Exactly.Chord{pitches: pitches, duration: duration}) do
       [
         "<",
-        Enum.map(pitches, fn p ->
-          p |> @protocol.to_lilypond() |> indent()
+        Enum.map(noteheads, fn n ->
+          n |> @protocol.to_lilypond() |> indent()
         end),
         ">#{@protocol.to_lilypond(duration)}"
       ]
-      |> concat()
+      |> concat(joiner)
     end
   end
 end
