@@ -6,7 +6,7 @@ defmodule Exactly.RestTest do
   describe "new/0" do
     test "defaults to r4" do
       assert Rest.new() == %Rest{
-               duration: %Duration{log: 2, dots: 0}
+               written_duration: %Duration{log: 2, dots: 0}
              }
     end
   end
@@ -14,7 +14,7 @@ defmodule Exactly.RestTest do
   describe "new/1" do
     test "can set the duration" do
       assert Rest.new(Duration.new(3 / 8)) == %Rest{
-               duration: %Duration{log: 2, dots: 1}
+               written_duration: %Duration{log: 2, dots: 1}
              }
     end
   end

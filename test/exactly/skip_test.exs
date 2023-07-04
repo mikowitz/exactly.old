@@ -6,7 +6,7 @@ defmodule Exactly.SkipTest do
   describe "new/0" do
     test "defaults to r4" do
       assert Skip.new() == %Skip{
-               duration: %Duration{log: 2, dots: 0}
+               written_duration: %Duration{log: 2, dots: 0}
              }
     end
   end
@@ -14,7 +14,7 @@ defmodule Exactly.SkipTest do
   describe "new/1" do
     test "can set the duration" do
       assert Skip.new(Duration.new(3 / 8)) == %Skip{
-               duration: %Duration{log: 2, dots: 1}
+               written_duration: %Duration{log: 2, dots: 1}
              }
     end
   end
