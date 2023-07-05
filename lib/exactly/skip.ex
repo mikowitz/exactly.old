@@ -5,7 +5,7 @@ defmodule Exactly.Skip do
 
   alias Exactly.Duration
 
-  defstruct [:written_duration]
+  defstruct [:written_duration, attachments: []]
 
   @type t :: %__MODULE__{
           written_duration: Duration.t()
@@ -19,7 +19,7 @@ defmodule Exactly.Skip do
 
   defimpl String.Chars do
     def to_string(%Exactly.Skip{written_duration: duration}) do
-      "r" <> @protocol.to_string(duration)
+      "s" <> @protocol.to_string(duration)
     end
   end
 
@@ -36,8 +36,17 @@ defmodule Exactly.Skip do
   end
 
   defimpl Exactly.ToLilypond do
+    import Exactly.Lilypond.Utils
+
     def to_lilypond(%Exactly.Skip{} = skip) do
-      to_string(skip)
+      %{before: attachments_before, after: attachments_after} = attachments_for(skip)
+
+      [
+        attachments_before,
+        to_string(skip),
+        Enum.map(attachments_after, &indent/1)
+      ]
+      |> concat()
     end
   end
 end

@@ -9,7 +9,7 @@ defmodule Exactly.Chord do
 
   alias Exactly.{Duration, Notehead, Pitch}
 
-  defstruct [:noteheads, :written_duration]
+  defstruct [:noteheads, :written_duration, attachments: []]
 
   @type t :: %__MODULE__{
           noteheads: [Notehead.t()],
@@ -49,21 +49,28 @@ defmodule Exactly.Chord do
   defimpl Exactly.ToLilypond do
     import Exactly.Lilypond.Utils
 
-    def to_lilypond(%Exactly.Chord{noteheads: noteheads, written_duration: duration}) do
+    def to_lilypond(%Exactly.Chord{noteheads: noteheads, written_duration: duration} = chord) do
       joiner =
         case noteheads do
           [] -> ""
           _ -> "\n"
         end
 
+      %{before: attachments_before, after: attachments_after} = attachments_for(chord)
+
       [
-        "<",
-        Enum.map(noteheads, fn n ->
-          n |> @protocol.to_lilypond() |> indent()
-        end),
-        ">#{@protocol.to_lilypond(duration)}"
+        attachments_before,
+        [
+          "<",
+          Enum.map(noteheads, fn n ->
+            n |> @protocol.to_lilypond() |> indent()
+          end),
+          ">#{@protocol.to_lilypond(duration)}"
+        ]
+        |> concat(joiner),
+        Enum.map(attachments_after, &indent/1)
       ]
-      |> concat(joiner)
+      |> concat()
     end
   end
 end

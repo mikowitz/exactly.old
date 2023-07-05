@@ -1,6 +1,8 @@
 defmodule Exactly.Lilypond.Utils do
   @moduledoc false
 
+  alias Exactly.Attachment
+
   def indent(s, depth \\ 1)
   def indent(nil, _), do: nil
 
@@ -8,7 +10,6 @@ defmodule Exactly.Lilypond.Utils do
     s
     |> String.trim()
     |> String.split("\n")
-    # |> Enum.map_join("\n", &"#{String.duplicate("  ", depth)}#{&1}")
     |> Enum.map_join("\n", fn
       "" -> ""
       s -> "#{String.duplicate("  ", depth)}#{s}"
@@ -39,5 +40,15 @@ defmodule Exactly.Lilypond.Utils do
 
   def brackets(context, name, true) do
     {"\\context #{context} = \"#{name}\" <<", ">>"}
+  end
+
+  def attachments_for(%{attachments: attachments}) do
+    attachments
+    |> Enum.reverse()
+    |> Enum.map(&Attachment.prepared_components/1)
+    |> Enum.reduce([before: [], after: []], fn components, acc ->
+      Keyword.merge(acc, components, fn _k, v1, v2 -> v1 ++ v2 end)
+    end)
+    |> Enum.into(%{})
   end
 end

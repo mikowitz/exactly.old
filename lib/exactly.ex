@@ -18,6 +18,7 @@ defmodule Exactly do
           | Exactly.Tuplet.t()
           | Exactly.Voice.t()
 
+  alias Exactly.Attachment
   alias Exactly.Lilypond.File, as: LilypondFile
 
   def to_lilypond(x), do: Exactly.ToLilypond.to_lilypond(x)
@@ -28,5 +29,9 @@ defmodule Exactly do
     |> LilypondFile.save()
     |> LilypondFile.compile()
     |> LilypondFile.show()
+  end
+
+  def attach(%{attachments: _} = target, attachable, opts \\ []) do
+    %{target | attachments: [Attachment.new(attachable, opts) | target.attachments]}
   end
 end

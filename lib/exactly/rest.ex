@@ -5,7 +5,7 @@ defmodule Exactly.Rest do
 
   alias Exactly.Duration
 
-  defstruct [:written_duration]
+  defstruct [:written_duration, attachments: []]
 
   @type t :: %__MODULE__{
           written_duration: Duration.t()
@@ -36,8 +36,17 @@ defmodule Exactly.Rest do
   end
 
   defimpl Exactly.ToLilypond do
+    import Exactly.Lilypond.Utils
+
     def to_lilypond(%Exactly.Rest{} = rest) do
-      to_string(rest)
+      %{before: attachments_before, after: attachments_after} = attachments_for(rest)
+
+      [
+        attachments_before,
+        to_string(rest),
+        Enum.map(attachments_after, &indent/1)
+      ]
+      |> concat()
     end
   end
 end

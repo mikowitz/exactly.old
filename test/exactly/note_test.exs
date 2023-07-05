@@ -1,7 +1,7 @@
 defmodule Exactly.NoteTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Duration, Note, Notehead, Pitch}
+  alias Exactly.{Articulation, Duration, Note, Notehead, Pitch}
 
   describe "new/0" do
     test "defaults to c'4" do
@@ -53,6 +53,18 @@ defmodule Exactly.NoteTest do
     test "returns the correct Lilypond string for the note" do
       assert Note.new(Pitch.new(2, -0.5, -2), Duration.new(3 / 2)) |> Exactly.to_lilypond() ==
                "ef,,1."
+    end
+
+    test "correctly displays attachments" do
+      note =
+        Note.new()
+        |> Exactly.attach(Articulation.new(:accent))
+
+      assert Exactly.to_lilypond(note) ==
+               String.trim("""
+               c4
+                 - \\accent
+               """)
     end
   end
 end

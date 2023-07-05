@@ -1,12 +1,12 @@
 defmodule Exactly.MultiMeasureRestTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Duration, MultiMeasureRest}
+  alias Exactly.{Articulation, Duration, MultiMeasureRest}
 
   describe "new/0" do
     test "defaults to 'R1'" do
       assert MultiMeasureRest.new() == %MultiMeasureRest{
-               duration: %Duration{
+               written_duration: %Duration{
                  log: 0,
                  dots: 0
                }
@@ -17,7 +17,7 @@ defmodule Exactly.MultiMeasureRestTest do
   describe "new/1" do
     test "can set the duration" do
       assert MultiMeasureRest.new(Duration.new(1, 5)) == %MultiMeasureRest{
-               duration: %Duration{
+               written_duration: %Duration{
                  log: 0,
                  dots: 0,
                  scale: 5
@@ -47,6 +47,18 @@ defmodule Exactly.MultiMeasureRestTest do
 
       assert MultiMeasureRest.new(Duration.new(1, 0.3)) |> Exactly.to_lilypond() ==
                "R1*3/10"
+    end
+
+    test "correctly displays attachments" do
+      mmr =
+        MultiMeasureRest.new(Duration.new(1, 3))
+        |> Exactly.attach(Articulation.new(:staccatissimo), direction: :down)
+
+      assert Exactly.to_lilypond(mmr) ==
+               String.trim("""
+               R1*3
+                 _ \\staccatissimo
+               """)
     end
   end
 end
