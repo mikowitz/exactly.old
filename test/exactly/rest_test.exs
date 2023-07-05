@@ -1,7 +1,7 @@
 defmodule Exactly.RestTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Duration, Rest}
+  alias Exactly.{BreathMark, Duration, Rest}
 
   describe "new/0" do
     test "defaults to r4" do
@@ -28,6 +28,18 @@ defmodule Exactly.RestTest do
   describe "to_lilypond/1" do
     test "returns the correct Lilypond string for the rest" do
       assert Rest.new(Duration.new(8)) |> Exactly.to_lilypond() == "r\\maxima"
+    end
+
+    test "can display attachments" do
+      rest =
+        Rest.new(Duration.new(1 / 4))
+        |> Exactly.attach(BreathMark.new())
+
+      assert Exactly.to_lilypond(rest) ==
+               String.trim("""
+               r4
+                 \\breathe
+               """)
     end
   end
 end

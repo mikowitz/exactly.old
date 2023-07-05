@@ -5,18 +5,18 @@ defmodule Exactly.MultiMeasureRest do
 
   alias Exactly.Duration
 
-  defstruct [:duration]
+  defstruct [:written_duration, attachments: []]
 
   @type t :: %__MODULE__{
-          duration: Duration.t()
+          written_duration: Duration.t()
         }
 
   def new(duration \\ Duration.new(1)) do
-    %__MODULE__{duration: duration}
+    %__MODULE__{written_duration: duration}
   end
 
   defimpl String.Chars do
-    def to_string(%Exactly.MultiMeasureRest{duration: duration}) do
+    def to_string(%Exactly.MultiMeasureRest{written_duration: duration}) do
       "R" <> @protocol.to_string(duration)
     end
   end
@@ -34,6 +34,17 @@ defmodule Exactly.MultiMeasureRest do
   end
 
   defimpl Exactly.ToLilypond do
-    def to_lilypond(%Exactly.MultiMeasureRest{} = mm_rest), do: to_string(mm_rest)
+    import Exactly.Lilypond.Utils
+
+    def to_lilypond(%Exactly.MultiMeasureRest{} = mm_rest) do
+      %{before: attachments_before, after: attachments_after} = attachments_for(mm_rest)
+
+      [
+        attachments_before,
+        to_string(mm_rest),
+        Enum.map(attachments_after, &indent/1)
+      ]
+      |> concat()
+    end
   end
 end

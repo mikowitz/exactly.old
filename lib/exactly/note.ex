@@ -5,7 +5,7 @@ defmodule Exactly.Note do
 
   alias Exactly.{Duration, Notehead, Pitch}
 
-  defstruct [:written_duration, :notehead]
+  defstruct [:written_duration, :notehead, attachments: []]
 
   @type t :: %__MODULE__{
           written_duration: Duration.t(),
@@ -47,8 +47,17 @@ defmodule Exactly.Note do
   end
 
   defimpl Exactly.ToLilypond do
+    import Exactly.Lilypond.Utils
+
     def to_lilypond(%Exactly.Note{} = note) do
-      to_string(note)
+      %{before: attachments_before, after: attachments_after} = attachments_for(note)
+
+      [
+        attachments_before,
+        to_string(note),
+        Enum.map(attachments_after, &indent/1)
+      ]
+      |> concat()
     end
   end
 end

@@ -1,7 +1,7 @@
 defmodule Exactly.ChordTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Chord, Duration, Pitch}
+  alias Exactly.{Articulation, Chord, Duration, Pitch}
 
   describe "new/1" do
     test "defaults duration to quarter note" do
@@ -61,6 +61,19 @@ defmodule Exactly.ChordTest do
 
     test "empty chords have a duration printed" do
       assert Chord.new() |> Exactly.to_lilypond() == "<>4"
+    end
+
+    test "attachments are printed" do
+      assert Chord.new([Pitch.new(), Pitch.new(2)])
+             |> Exactly.attach(Articulation.new(:accent), direction: :up)
+             |> Exactly.to_lilypond() ==
+               String.trim("""
+               <
+                 c
+                 e
+               >4
+                 ^ \\accent
+               """)
     end
   end
 end
