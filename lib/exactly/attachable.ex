@@ -22,6 +22,15 @@ defmodule Exactly.Attachable do
       defimpl Exactly.HasDirection do
         def has_direction(_), do: unquote(has_direction)
       end
+
+      if unquote(fields) == [] do
+        defimpl Inspect do
+          def inspect(%@for{}, _opts) do
+            module_name = Module.split(@for) |> Enum.join(".")
+            "##{module_name}<>"
+          end
+        end
+      end
     end
   end
 end

@@ -1,13 +1,13 @@
-defmodule Exactly.BreathMark do
+defmodule Exactly.StopSlur do
   @moduledoc """
-  Models a Lilypond breath mark
+  Models the end of a slur
   """
 
   use Exactly.Attachable, has_direction: false
 
   def new do
     %__MODULE__{
-      components: [after: ["\\breathe"]]
+      components: [after: [")"]]
     }
   end
 end

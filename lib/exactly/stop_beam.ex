@@ -1,13 +1,13 @@
-defmodule Exactly.BreathMark do
+defmodule Exactly.StopBeam do
   @moduledoc """
-  Models a Lilypond breath mark
+  Models the end of a specified beam
   """
 
   use Exactly.Attachable, has_direction: false
 
   def new do
     %__MODULE__{
-      components: [after: ["\\breathe"]]
+      components: [after: ["]"]]
     }
   end
 end

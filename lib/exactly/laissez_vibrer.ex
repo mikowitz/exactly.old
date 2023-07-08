@@ -10,8 +10,4 @@ defmodule Exactly.LaissezVibrer do
       components: [after: ["\\laissezVibrer"]]
     }
   end
-
-  defimpl Inspect do
-    def inspect(%@for{}, _opts), do: "#Exactly.LaissezVibrer<>"
-  end
 end
