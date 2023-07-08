@@ -10,7 +10,7 @@ defmodule Exactly.LaissezVibrerTest do
   end
 
   describe "to_lilypond/1" do
-    test "returns the correct Lilypond string the laissez vibrer tie" do
+    test "returns the correct Lilypond string for the laissez vibrer tie" do
       note =
         Note.new()
         |> Exactly.attach(LaissezVibrer.new(), direction: :up)

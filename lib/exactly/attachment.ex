@@ -16,14 +16,15 @@ defmodule Exactly.Attachment do
   def prepared_components(%__MODULE__{attachable: %{components: components}, direction: direction}) do
     components
     |> Enum.map(fn {k, v} ->
-      {k, Enum.map(v, &with_direction(&1, direction))}
+      {k, Enum.map(v, &with_direction(&1, k, direction))}
     end)
   end
 
-  defp with_direction(str, nil), do: str
-  defp with_direction(str, :neutral), do: "- #{str}"
-  defp with_direction(str, :up), do: "^ #{str}"
-  defp with_direction(str, :down), do: "_ #{str}"
+  defp with_direction(str, :before, _), do: str
+  defp with_direction(str, _, nil), do: str
+  defp with_direction(str, _, :neutral), do: "- #{str}"
+  defp with_direction(str, _, :up), do: "^ #{str}"
+  defp with_direction(str, _, :down), do: "_ #{str}"
 
   defp attachable_direction(attachable, opts) do
     case Exactly.HasDirection.has_direction(attachable) do

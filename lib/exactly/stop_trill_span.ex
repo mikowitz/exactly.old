@@ -1,13 +1,13 @@
-defmodule Exactly.BreathMark do
+defmodule Exactly.StopTrillSpan do
   @moduledoc """
-  Models a Lilypond breath mark
+  Models the end of a trill span
   """
 
   use Exactly.Attachable, has_direction: false
 
   def new do
     %__MODULE__{
-      components: [after: ["\\breathe"]]
+      components: [after: ["\\stopTrillSpan"]]
     }
   end
 end
