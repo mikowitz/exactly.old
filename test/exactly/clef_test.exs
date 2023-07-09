@@ -1,14 +1,17 @@
 defmodule Exactly.ClefTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.Clef
+  alias Exactly.{Clef, Note}
 
   describe "new/1" do
     test "creates a new clef struct from a valid clef name" do
       assert Clef.new(:treble) == %Clef{
                name: :treble,
                octavation: 0,
-               octavation_optional: nil
+               octavation_optional: nil,
+               components: [
+                 before: ["\\clef \"treble\""]
+               ]
              }
     end
 
@@ -22,13 +25,19 @@ defmodule Exactly.ClefTest do
       assert Clef.new(:treble, octavation: 8) == %Clef{
                name: :treble,
                octavation: 8,
-               octavation_optional: nil
+               octavation_optional: nil,
+               components: [
+                 before: ["\\clef \"treble^8\""]
+               ]
              }
 
       assert Clef.new(:treble, octavation: -15, octavation_optional: :parentheses) == %Clef{
                name: :treble,
                octavation: -15,
-               octavation_optional: :parentheses
+               octavation_optional: :parentheses,
+               components: [
+                 before: ["\\clef \"treble_(15)\""]
+               ]
              }
     end
   end
@@ -53,19 +62,47 @@ defmodule Exactly.ClefTest do
 
   describe "to_lilypond/1" do
     test "returns the correct Lilypond string for the clef" do
-      clef = Clef.new(:treble)
-      assert Exactly.to_lilypond(clef) == "\\clef \"treble\""
+      note = attach_clef_to_note(Clef.new(:treble))
+
+      assert Exactly.to_lilypond(note) ==
+               String.trim("""
+               \\clef "treble"
+               c4
+               """)
     end
 
     test "to_lilypond shows octavation" do
-      clef = Clef.new(:treble, octavation: -8)
-      assert Exactly.to_lilypond(clef) == "\\clef \"treble_8\""
+      note =
+        Clef.new(:treble, octavation: -8)
+        |> attach_clef_to_note()
 
-      clef2 = Clef.new(:treble, octavation: 15, octavation_optional: :parentheses)
-      assert Exactly.to_lilypond(clef2) == "\\clef \"treble^(15)\""
+      assert Exactly.to_lilypond(note) ==
+               String.trim("""
+               \\clef "treble_8"
+               c4
+               """)
 
-      clef3 = Clef.new(:treble, octavation: -15, octavation_optional: :brackets)
-      assert Exactly.to_lilypond(clef3) == "\\clef \"treble_[15]\""
+      note2 =
+        Clef.new(:treble, octavation: 15, octavation_optional: :parentheses)
+        |> attach_clef_to_note()
+
+      assert Exactly.to_lilypond(note2) ==
+               String.trim("""
+               \\clef "treble^(15)"
+               c4
+               """)
+
+      note3 =
+        Clef.new(:treble, octavation: -15, octavation_optional: :brackets)
+        |> attach_clef_to_note()
+
+      assert Exactly.to_lilypond(note3) ==
+               String.trim("""
+               \\clef "treble_[15]"
+               c4
+               """)
     end
   end
+
+  defp attach_clef_to_note(clef), do: Exactly.attach(Note.new(), clef)
 end

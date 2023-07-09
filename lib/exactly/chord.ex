@@ -68,7 +68,7 @@ defmodule Exactly.Chord do
           ">#{@protocol.to_lilypond(duration)}"
         ]
         |> concat(joiner),
-        Enum.map(attachments_after, &indent/1)
+        attachments_after
       ]
       |> concat()
     end

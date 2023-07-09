@@ -55,7 +55,7 @@ defmodule Exactly.Note do
       [
         attachments_before,
         to_string(note),
-        Enum.map(attachments_after, &indent/1)
+        attachments_after
       ]
       |> concat()
     end

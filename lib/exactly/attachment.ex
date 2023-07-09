@@ -13,10 +13,18 @@ defmodule Exactly.Attachment do
     }
   end
 
-  def prepared_components(%__MODULE__{attachable: %{components: components}, direction: direction}) do
+  def prepared_components(%__MODULE__{
+        attachable: %attachable_struct{components: components},
+        direction: direction
+      }) do
     components
-    |> Enum.map(fn {k, v} ->
-      {k, Enum.map(v, &with_direction(&1, k, direction))}
+    |> Enum.map(fn
+      {:before, v} ->
+        {:before, Enum.map(v, &with_direction(&1, :before, direction))}
+
+      {:after, v} ->
+        {:after,
+         Enum.map(v, &{with_direction(&1, :after, direction), attachable_struct.should_indent()})}
     end)
   end
 

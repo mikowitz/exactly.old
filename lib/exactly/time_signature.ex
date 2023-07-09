@@ -3,15 +3,22 @@ defmodule Exactly.TimeSignature do
   Models a Lilypond time signature
   """
 
-  defstruct [:numerator, :denominator]
+  use Exactly.Attachable, has_direction: false, fields: [:numerator, :denominator]
 
   @type t :: %__MODULE__{
           numerator: integer(),
-          denominator: integer()
+          denominator: integer(),
+          components: Keyword.t()
         }
 
   def new(numerator, denominator) do
-    %__MODULE__{numerator: numerator, denominator: denominator}
+    %__MODULE__{
+      numerator: numerator,
+      denominator: denominator,
+      components: [
+        before: ["\\time #{numerator}/#{denominator}"]
+      ]
+    }
   end
 
   defimpl Inspect do
@@ -23,12 +30,6 @@ defmodule Exactly.TimeSignature do
         "#{n}/#{d}",
         ">"
       ])
-    end
-  end
-
-  defimpl Exactly.ToLilypond do
-    def to_lilypond(%@for{numerator: n, denominator: d}) do
-      "\\time #{n}/#{d}"
     end
   end
 end

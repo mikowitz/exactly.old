@@ -1,17 +1,17 @@
 defmodule Exactly.BarlineTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.Barline
+  alias Exactly.{Barline, Note}
 
   describe "new/0" do
     test "defaults to a regular | barline" do
-      assert Barline.new() == %Barline{barline: "|"}
+      assert Barline.new() == %Barline{barline: "|", components: [after: ["\\bar \"|\""]]}
     end
   end
 
   describe "new/1" do
     test "returns a Barline when a valid barline is given" do
-      assert Barline.new(".") == %Barline{barline: "."}
+      assert Barline.new(".") == %Barline{barline: ".", components: [after: ["\\bar \".\""]]}
     end
 
     test "returns an error tuple when an invalid barline is given" do
@@ -19,7 +19,7 @@ defmodule Exactly.BarlineTest do
     end
 
     test "the empty string is a valid barline" do
-      assert Barline.new("") == %Barline{barline: ""}
+      assert Barline.new("") == %Barline{barline: "", components: [after: ["\\bar \"\""]]}
     end
   end
 
@@ -35,7 +35,15 @@ defmodule Exactly.BarlineTest do
 
   describe "to_lilypond/1" do
     test "returns the correct Lilypond string for the barline" do
-      assert Barline.new(":|.|:") |> Exactly.to_lilypond() == "\\bar \":|.|:\""
+      note =
+        Note.new()
+        |> Exactly.attach(Barline.new(":|.|:"))
+
+      assert Exactly.to_lilypond(note) ==
+               String.trim("""
+               c4
+               \\bar ":|.|:"
+               """)
     end
   end
 end
