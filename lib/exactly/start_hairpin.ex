@@ -3,7 +3,7 @@ defmodule Exactly.StartHairpin do
   Models the beginning of a hairpin
   """
 
-  use Exactly.Attachable, fields: [:shape]
+  use Exactly.Attachable, fields: [:shape], priority: 1
 
   @valid_shapes ~w(< >)a
 

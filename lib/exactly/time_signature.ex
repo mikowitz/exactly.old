@@ -3,7 +3,7 @@ defmodule Exactly.TimeSignature do
   Models a Lilypond time signature
   """
 
-  use Exactly.Attachable, has_direction: false, fields: [:numerator, :denominator]
+  use Exactly.Attachable, has_direction: false, fields: [:numerator, :denominator], priority: -1
 
   @type t :: %__MODULE__{
           numerator: integer(),

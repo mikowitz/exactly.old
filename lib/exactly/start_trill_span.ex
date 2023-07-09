@@ -3,7 +3,7 @@ defmodule Exactly.StartTrillSpan do
   Models the beginning of a trill span
   """
 
-  use Exactly.Attachable, fields: [:trill_pitch]
+  use Exactly.Attachable, fields: [:trill_pitch], priority: 1
 
   def new(opts \\ []) do
     trill_pitch = Keyword.get(opts, :trill_pitch, nil)

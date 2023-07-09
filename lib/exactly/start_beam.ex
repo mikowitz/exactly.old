@@ -3,7 +3,7 @@ defmodule Exactly.StartBeam do
   Models the beginning of a specified beam
   """
 
-  use Exactly.Attachable
+  use Exactly.Attachable, priority: 1
 
   def new do
     %__MODULE__{

@@ -3,7 +3,7 @@ defmodule Exactly.StartPianoPedal do
   Models a pedal down marking
   """
 
-  use Exactly.Attachable, has_direction: false, fields: [:pedal]
+  use Exactly.Attachable, has_direction: false, fields: [:pedal], priority: 1
 
   @valid_pedals ~w(sustain sostenuto corda)a
 
