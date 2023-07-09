@@ -44,7 +44,7 @@ defmodule Exactly.Rest do
       [
         attachments_before,
         to_string(rest),
-        Enum.map(attachments_after, &indent/1)
+        attachments_after
       ]
       |> concat()
     end

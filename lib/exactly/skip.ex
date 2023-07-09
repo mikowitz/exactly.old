@@ -44,7 +44,7 @@ defmodule Exactly.Skip do
       [
         attachments_before,
         to_string(skip),
-        Enum.map(attachments_after, &indent/1)
+        attachments_after
       ]
       |> concat()
     end

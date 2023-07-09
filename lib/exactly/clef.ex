@@ -5,7 +5,8 @@ defmodule Exactly.Clef do
 
   @valid_clefs ~w(G G2 treble violin french GG tenorG soprano mezzosoprano C alto tenor baritone varC altovarC tenorvarC baritonevarC varbaritone baritonevarF F bass subbass)a
 
-  defstruct [:name, :octavation, :octavation_optional]
+  # defstruct [:name, :octavation, :octavation_optional]
+  use Exactly.Attachable, has_direction: true, fields: [:name, :octavation, :octavation_optional]
 
   @type t :: %__MODULE__{
           name: atom(),
@@ -16,15 +17,28 @@ defmodule Exactly.Clef do
   def new(name, opts \\ []) do
     case validate_clef_name(name) do
       {:ok, name} ->
+        octavation = Keyword.get(opts, :octavation, 0)
+        octavation_optional = Keyword.get(opts, :octavation_optional, nil)
+
         %__MODULE__{
           name: name,
-          octavation: Keyword.get(opts, :octavation, 0),
-          octavation_optional: Keyword.get(opts, :octavation_optional, nil)
+          octavation: octavation,
+          octavation_optional: octavation_optional
         }
+        |> build_components()
 
       :error ->
         {:error, :invalid_clef_name, name}
     end
+  end
+
+  defp build_components(%__MODULE__{} = clef) do
+    %__MODULE__{
+      clef
+      | components: [
+          before: ["\\clef \"#{to_string(clef)}\""]
+        ]
+    }
   end
 
   defp validate_clef_name(name) when name in @valid_clefs, do: {:ok, name}
@@ -57,12 +71,6 @@ defmodule Exactly.Clef do
         to_string(clef),
         ">"
       ])
-    end
-  end
-
-  defimpl Exactly.ToLilypond do
-    def to_lilypond(%@for{} = clef) do
-      "\\clef \"#{to_string(clef)}\""
     end
   end
 end

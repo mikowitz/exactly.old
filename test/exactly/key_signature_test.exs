@@ -1,7 +1,7 @@
 defmodule Exactly.KeySignatureTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{KeySignature, Pitch}
+  alias Exactly.{KeySignature, Note, Pitch}
 
   describe "new/1" do
     test "mode defaults to major" do
@@ -11,7 +11,10 @@ defmodule Exactly.KeySignatureTest do
                  alter: 0,
                  octave: 0
                },
-               mode: :major
+               mode: :major,
+               components: [
+                 before: ["\\key c \\major"]
+               ]
              }
     end
   end
@@ -24,7 +27,10 @@ defmodule Exactly.KeySignatureTest do
                  alter: 0,
                  octave: 0
                },
-               mode: :minor
+               mode: :minor,
+               components: [
+                 before: ["\\key d \\minor"]
+               ]
              }
     end
 
@@ -43,8 +49,15 @@ defmodule Exactly.KeySignatureTest do
 
   describe "to_lilypond/1" do
     test "returns the correct Lilypond string for the keysignature" do
-      key_sig = KeySignature.new(Pitch.new(3, 0.5), :lydian)
-      assert Exactly.to_lilypond(key_sig) == "\\key fs \\lydian"
+      note =
+        Note.new()
+        |> Exactly.attach(KeySignature.new(Pitch.new(3, 0.5), :lydian))
+
+      assert Exactly.to_lilypond(note) ==
+               String.trim("""
+               \\key fs \\lydian
+               c4
+               """)
     end
   end
 end

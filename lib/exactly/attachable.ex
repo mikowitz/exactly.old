@@ -15,9 +15,12 @@ defmodule Exactly.Attachable do
   defmacro __using__(opts) do
     fields = Keyword.get(opts, :fields, [])
     has_direction = Keyword.get(opts, :has_direction, true)
+    should_indent = Keyword.get(opts, :should_indent, true)
 
     quote do
       defstruct [unquote_splicing(fields), :components]
+
+      def should_indent, do: unquote(should_indent)
 
       defimpl Exactly.HasDirection do
         def has_direction(_), do: unquote(has_direction)

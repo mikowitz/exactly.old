@@ -5,7 +5,8 @@ defmodule Exactly.KeySignature do
 
   alias Exactly.Pitch
 
-  defstruct [:pitch, :mode]
+  # defstruct [:pitch, :mode]
+  use Exactly.Attachable, has_direction: false, fields: [:pitch, :mode]
 
   @valid_modes ~w(major minor dorian phrygian lydian mixolydian locrian ionian aeolian)a
 
@@ -28,7 +29,10 @@ defmodule Exactly.KeySignature do
       {:ok, mode} ->
         %__MODULE__{
           pitch: pitch,
-          mode: mode
+          mode: mode,
+          components: [
+            before: ["\\key #{pitch} \\#{mode}"]
+          ]
         }
 
       :error ->
@@ -50,12 +54,6 @@ defmodule Exactly.KeySignature do
         to_string(mode),
         ">"
       ])
-    end
-  end
-
-  defimpl Exactly.ToLilypond do
-    def to_lilypond(%@for{pitch: pitch, mode: mode}) do
-      "\\key #{to_string(pitch)} \\#{to_string(mode)}"
     end
   end
 end

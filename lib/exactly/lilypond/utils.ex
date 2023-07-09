@@ -50,5 +50,11 @@ defmodule Exactly.Lilypond.Utils do
       Keyword.merge(acc, components, fn _k, v1, v2 -> v1 ++ v2 end)
     end)
     |> Enum.into(%{})
+    |> update_in([:after], fn as ->
+      Enum.map(as, fn
+        {attachment, true} -> indent(attachment)
+        {attachment, false} -> attachment
+      end)
+    end)
   end
 end

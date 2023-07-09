@@ -5,16 +5,25 @@ defmodule Exactly.Barline do
 
   @valid_barlines ~w(| . || .| |. .. |.| ; ! ' , .|: :|. :..: :|.|: :|.: :.|.: [|: :|] :|][|:)
 
-  defstruct [:barline]
+  use Exactly.Attachable, has_direction: false, fields: [:barline], should_indent: false
 
   @type t :: %__MODULE__{
-          barline: String.t()
+          barline: String.t(),
+          components: Keyword.t()
         }
 
   def new(barline \\ "|") do
     case validate_barline(barline) do
-      {:ok, barline} -> %__MODULE__{barline: barline}
-      :error -> {:error, :invalid_barline, barline}
+      {:ok, barline} ->
+        %__MODULE__{
+          barline: barline,
+          components: [
+            after: ["\\bar \"#{barline}\""]
+          ]
+        }
+
+      :error ->
+        {:error, :invalid_barline, barline}
     end
   end
 
@@ -32,12 +41,6 @@ defmodule Exactly.Barline do
         @protocol.inspect(barline, opts),
         ">"
       ])
-    end
-  end
-
-  defimpl Exactly.ToLilypond do
-    def to_lilypond(%@for{barline: barline}) do
-      "\\bar \"#{barline}\""
     end
   end
 end
