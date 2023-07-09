@@ -18,14 +18,17 @@ defmodule Exactly.Attachment do
         direction: direction
       }) do
     components
-    |> Enum.map(fn
-      {:before, v} ->
-        {:before, Enum.map(v, &with_direction(&1, :before, direction))}
-
-      {:after, v} ->
-        {:after,
-         Enum.map(v, &{with_direction(&1, :after, direction), attachable_struct.should_indent()})}
+    |> Enum.map(fn {k, v} ->
+      {k, Enum.map(v, &prepared_component(&1, attachable_struct, k, direction))}
     end)
+  end
+
+  defp prepared_component(component, attachable_struct, position, direction) do
+    {
+      with_direction(component, position, direction),
+      attachable_struct.should_indent(),
+      attachable_struct.priority()
+    }
   end
 
   defp with_direction(str, :before, _), do: str

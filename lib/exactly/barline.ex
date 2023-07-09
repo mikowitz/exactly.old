@@ -5,7 +5,11 @@ defmodule Exactly.Barline do
 
   @valid_barlines ~w(| . || .| |. .. |.| ; ! ' , .|: :|. :..: :|.|: :|.: :.|.: [|: :|] :|][|:)
 
-  use Exactly.Attachable, has_direction: false, fields: [:barline], should_indent: false
+  use Exactly.Attachable,
+    has_direction: false,
+    fields: [:barline],
+    should_indent: false,
+    priority: 100
 
   @type t :: %__MODULE__{
           barline: String.t(),

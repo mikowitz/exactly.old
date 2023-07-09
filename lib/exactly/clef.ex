@@ -6,7 +6,10 @@ defmodule Exactly.Clef do
   @valid_clefs ~w(G G2 treble violin french GG tenorG soprano mezzosoprano C alto tenor baritone varC altovarC tenorvarC baritonevarC varbaritone baritonevarF F bass subbass)a
 
   # defstruct [:name, :octavation, :octavation_optional]
-  use Exactly.Attachable, has_direction: true, fields: [:name, :octavation, :octavation_optional]
+  use Exactly.Attachable,
+    has_direction: true,
+    fields: [:name, :octavation, :octavation_optional],
+    priority: -3
 
   @type t :: %__MODULE__{
           name: atom(),

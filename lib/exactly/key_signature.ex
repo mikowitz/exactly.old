@@ -6,7 +6,7 @@ defmodule Exactly.KeySignature do
   alias Exactly.Pitch
 
   # defstruct [:pitch, :mode]
-  use Exactly.Attachable, has_direction: false, fields: [:pitch, :mode]
+  use Exactly.Attachable, has_direction: false, fields: [:pitch, :mode], priority: -2
 
   @valid_modes ~w(major minor dorian phrygian lydian mixolydian locrian ionian aeolian)a
 

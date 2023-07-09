@@ -3,7 +3,7 @@ defmodule Exactly.StopHairpin do
   Models the end of a hairpin
   """
 
-  use Exactly.Attachable, has_direction: false
+  use Exactly.Attachable, has_direction: false, priority: -1
 
   def new do
     %__MODULE__{

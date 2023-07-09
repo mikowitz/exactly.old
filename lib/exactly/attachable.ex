@@ -16,11 +16,14 @@ defmodule Exactly.Attachable do
     fields = Keyword.get(opts, :fields, [])
     has_direction = Keyword.get(opts, :has_direction, true)
     should_indent = Keyword.get(opts, :should_indent, true)
+    priority = Keyword.get(opts, :priority, 0)
 
     quote do
       defstruct [unquote_splicing(fields), :components]
 
       def should_indent, do: unquote(should_indent)
+
+      def priority, do: unquote(priority)
 
       defimpl Exactly.HasDirection do
         def has_direction(_), do: unquote(has_direction)

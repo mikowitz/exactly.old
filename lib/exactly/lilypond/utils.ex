@@ -49,12 +49,18 @@ defmodule Exactly.Lilypond.Utils do
     |> Enum.reduce([before: [], after: []], fn components, acc ->
       Keyword.merge(acc, components, fn _k, v1, v2 -> v1 ++ v2 end)
     end)
+    |> Enum.map(fn {k, v} -> {k, Enum.sort_by(v, &elem(&1, 2))} end)
+    |> Enum.map(fn {k, as} -> {k, indent_attachments(as, k)} end)
     |> Enum.into(%{})
-    |> update_in([:after], fn as ->
-      Enum.map(as, fn
-        {attachment, true} -> indent(attachment)
-        {attachment, false} -> attachment
-      end)
+  end
+
+  defp indent_attachments(attachments, :before) do
+    Enum.map(attachments, &elem(&1, 0))
+  end
+
+  defp indent_attachments(attachments, :after) do
+    Enum.map(attachments, fn {attachment, should_indent, _} ->
+      if should_indent, do: indent(attachment), else: attachment
     end)
   end
 end
