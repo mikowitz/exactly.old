@@ -1,7 +1,7 @@
 defmodule Exactly.BeamCountTest do
   use ExUnit.Case, async: true
 
-  alias Exactly.{Note, BeamCount}
+  alias Exactly.{BeamCount, Note}
 
   describe "new/0" do
     test "defaults to not explicitly setting beams" do
